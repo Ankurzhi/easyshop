@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Buy Now</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <header>
+      <nav class="navbar">
+        <div class="logo">ShopEasy 🛍️</div>
+        <ul class="nav-links">
+          <li><a href="index.html">Home</a></li>
+          <li><a href="categories.html">Categories</a></li>
+          <li><a href="deals.html">Deals</a></li>
+          <li><a href="cart.html">Cart 🛒</a></li>
+          <li><a href="contact.html">Contact</a></li>
+          <li><a href="buy.html">Buy now</a></li>
+          
+        </ul>
+      </nav>
+    </header>
+
+    <main>
+      <button id="buyNowBtn">🛒 Buy Now</button>
+      <p id="response"></p>
+    </main>
+
+    <script>
+      document.getElementById("buyNowBtn").addEventListener("click", () => {
+        fetch("http://localhost:5000/api/cart", {
+          method: "DELETE",
+        })
+          .then((res) => res.json())
+          .then((data) => {
+            alert(data.message); // show success message
+            document.getElementById("response").innerText = data.message;
+          })
+          .catch((err) => {
+            console.error("Fetch error:", err);
+            alert("Something went wrong!");
+          });
+      });
+    </script>
+  </body>
+</html>
