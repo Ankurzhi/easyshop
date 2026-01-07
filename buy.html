@@ -3,8 +3,9 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Buy Now</title>
+    <title>ShopEasy</title>
     <link rel="stylesheet" href="style.css" />
+    <link rel="icon" href="img/sitelogo.png" type="image/png" id="site_logo" />
   </head>
   <body>
     <header>
@@ -16,8 +17,8 @@
           <li><a href="deals.html">Deals</a></li>
           <li><a href="cart.html">Cart 🛒</a></li>
           <li><a href="contact.html">Contact</a></li>
-          <li><a href="buy.html">Buy now</a></li>
-          
+          <li><a href="buy.html" class="active">Buy now</a></li>
+          <li id="authArea"></li>
         </ul>
       </nav>
     </header>
@@ -34,7 +35,7 @@
         })
           .then((res) => res.json())
           .then((data) => {
-            alert(data.message); // show success message
+            alert(data.message); 
             document.getElementById("response").innerText = data.message;
           })
           .catch((err) => {
@@ -43,5 +44,6 @@
           });
       });
     </script>
+    <script src="auth.js"></script>
   </body>
 </html>

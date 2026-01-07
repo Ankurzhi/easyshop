@@ -1,6 +1,5 @@
 const apiUrl = "http://localhost:5000/api/products";
 
-
 if (document.getElementById("product-list")) {
   fetch(apiUrl)
     .then(res => res.json())
@@ -20,9 +19,6 @@ if (document.getElementById("product-list")) {
       });
     });
 }
-
-
-
 function addToCart( id,name, price) {
   let cart = JSON.parse(localStorage.getItem("cart")) || [];
   cart.push({ name, price });
@@ -122,14 +118,10 @@ function removeFromCart(index) {
   displayCart();
 }
 
-
 function clearCart() {
   localStorage.removeItem("cart");
   displayCart();
 }
-
-
-
 
  document.getElementById("contactForm").addEventListener("submit", async function(e) {
       e.preventDefault();
@@ -154,10 +146,6 @@ function clearCart() {
         document.getElementById("response").innerText = "Something went wrong. Try again later.";
       }
     });
-
-
-
-    
 
 document.querySelector("button").addEventListener("click", () => {
   // Get the current cart from localStorage
@@ -190,10 +178,6 @@ document.querySelector("button").addEventListener("click", () => {
 function goToCategory() {
   window.location.href = "categories.html";
 }
-
-
-
-
 
 if (!localStorage.getItem("offerShown")) {
   setTimeout(() => {

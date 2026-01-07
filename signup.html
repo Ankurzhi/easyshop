@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="style.css" />
+    <link rel="icon" href="img/sitelogo.png" type="image/png" id="site_logo" />
+    <title>ShopEasy</title>
+  </head>
+  <body>
+    <div class="auth-wrapper">
+      <!-- Navbar -->
+      <header>
+        <nav class="navbar">
+          <div class="logo">ShopEasy 🛍️</div>
+          <ul class="nav-links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="categories.html">Categories</a></li>
+            <li><a href="deals.html">Deals</a></li>
+            <li><a href="cart.html">Cart 🛒</a></li>
+            <li><a href="contact.html">Contact</a></li>
+            <li><a href="buy.html">Buy now</a></li>
+            <li><a href="sign.up" class="active">Sign up</a></li>
+          </ul>
+        </nav>
+      </header>
+
+      <main class="auth-main">
+        <div class="auth-box">
+          <h2>Create Account</h2>
+          <form id="signupForm">
+            <label for="name">Full Name</label>
+            <input type="text" id="name" name="name" required />
+
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email" required />
+
+            <label for="password">Password</label>
+            <input
+              type="password"
+              id="password"
+              name="password"
+              required
+              minlength="4"
+            />
+
+            <button type="submit">Sign Up</button>
+          </form>
+          <div class="auth-msg" id="signupMsg"></div>
+
+          <p>
+            Already have an account?
+            <a href="login.html">Login</a>
+          </p>
+        </div>
+      </main>
+
+      <footer>
+        <p>© 2025 ShopEasy. All rights reserved.</p>
+      </footer>
+    </div>
+
+    <script>
+      const signupForm = document.getElementById("signupForm");
+      const signupMsg = document.getElementById("signupMsg");
+
+      signupForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const data = {
+          name: signupForm.name.value,
+          email: signupForm.email.value,
+          password: signupForm.password.value,
+        };
+
+        try {
+          const res = await fetch("http://localhost:5000/api/signup", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(data),
+          });
+
+          const json = await res.json();
+          signupMsg.textContent = json.message || "Something went wrong";
+
+          if (res.ok) {
+            signupMsg.style.color = "green";
+            signupForm.reset();
+          } else {
+            signupMsg.style.color = "red";
+          }
+        } catch (err) {
+          signupMsg.textContent = "Error: " + err.message;
+          signupMsg.style.color = "red";
+        }
+      });
+    </script>
+  </body>
+</html>

@@ -3,8 +3,9 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Buy Now</title>
+    <title>ShopEasy</title>
     <link rel="stylesheet" href="style.css" />
+    <link rel="icon" href="img/sitelogo.png" type="image/png" id="site_logo" />
   </head>
   <body>
     <header>
@@ -13,102 +14,102 @@
         <ul class="nav-links">
           <li><a href="index.html">Home</a></li>
           <li><a href="categories.html">Categories</a></li>
-          <li><a href="deals.html">Deals</a></li>
+          <li><a href="deals.html" class="active">Deals</a></li>
           <li><a href="cart.html">Cart 🛒</a></li>
           <li><a href="contact.html">Contact</a></li>
           <li><a href="buy.html">Buy now</a></li>
-          
+          <li id="authArea"></li>
         </ul>
       </nav>
     </header>
-    
+
     <main class="container">
-    <div class="deals-grid" id="dealsGrid">
-      <!-- JS will create all deal cards here -->
-    </div>
-  </main>
-  <script>
-  const deals = [
-  {
-    name: "HP Pavilion Laptop",
-    img: "img/laptop1.jpeg",
-    price: 52990,
-    oldPrice: 62990,
-    discount: "16% OFF",
-    dealType: "Discount",
-    details: "Flat 16% off on laptops"
-  },
-  {
-    name: "Wireless Earbuds",
-    img: "img/earbud2.jpeg",
-    price: 1999,
-    oldPrice: 2999,
-    discount: "Buy 1 Get 1",
-    dealType: "BOGO",
-    details: "Buy 1 Get 1 Free on Earbuds"
-  },
-  {
-    name: "Apple iPhone 15",
-    img: "img/smartphone.jpg", 
-    price: 79999,
-    oldPrice: 99999,
-    discount: "50% OFF",
-    dealType: "Brand Offer",
-    details: "Special Apple Fest – 50% OFF"
-  },
-  {
-    name: "4K Smart TV",
-    img: "img/tv2.png",
-    price: 55000,
-    oldPrice: 70000,
-    discount: "80% OFF",
-    dealType: "Combo",
-    details: "Buy 2 TVs above ₹50,000 → Get 80% off"
-  },
-  {
-    name: "Bluetooth Speaker",
-    img: "img/bluetoothspeaker.jpg",
-    price: 2999,
-    oldPrice: 3999,
-    discount: "25% OFF",
-    dealType: "Discount",
-    details: "Flat 25% off on speakers"
-  },
-  {
-    name: "Gaming Tablet",
-    img: "img/tablet.jpeg",
-    price: 18999,
-    oldPrice: 22999,
-    discount: "18% OFF",
-    dealType: "Flash Sale",
-    details: "Limited time – grab yours now!"
-  },
-   {
-    name: "Samsung Galaxy",
-    img: "img/headphone3.jpeg",
-    price: 9840,
-    oldPrice: 12000,
-    discount: "18% OFF",
-    dealType: "Flash Sale",
-    details: "Limited time – grab yours now!"
-  },
-   {
-    name: "Samsung Airdops",
-    img: "img/headphone5.jpeg",
-    price: 2624,
-    oldPrice: 3200,
-    discount: "18% OFF",
-    dealType: "Flash Sale",
-    details: "Limited time – grab yours now!"
-  }
-];
+      <div class="deals-grid" id="dealsGrid">
+        <!-- JS will create all deal cards here -->
+      </div>
+    </main>
+    <script>
+      const deals = [
+        {
+          name: "HP Pavilion Laptop",
+          img: "img/laptop1.jpeg",
+          price: 52990,
+          oldPrice: 62990,
+          discount: "16% OFF",
+          dealType: "Discount",
+          details: "Flat 16% off on laptops",
+        },
+        {
+          name: "Wireless Earbuds",
+          img: "img/earbud2.jpeg",
+          price: 1999,
+          oldPrice: 2999,
+          discount: "Buy 1 Get 1",
+          dealType: "BOGO",
+          details: "Buy 1 Get 1 Free on Earbuds",
+        },
+        {
+          name: "Apple iPhone 15",
+          img: "img/smartphone.jpg",
+          price: 79999,
+          oldPrice: 99999,
+          discount: "50% OFF",
+          dealType: "Brand Offer",
+          details: "Special Apple Fest – 50% OFF",
+        },
+        {
+          name: "4K Smart TV",
+          img: "img/tv2.png",
+          price: 55000,
+          oldPrice: 70000,
+          discount: "80% OFF",
+          dealType: "Combo",
+          details: "Buy 2 TVs above ₹50,000 → Get 80% off",
+        },
+        {
+          name: "Bluetooth Speaker",
+          img: "img/bluetoothspeaker.jpg",
+          price: 2999,
+          oldPrice: 3999,
+          discount: "25% OFF",
+          dealType: "Discount",
+          details: "Flat 25% off on speakers",
+        },
+        {
+          name: "Gaming Tablet",
+          img: "img/tablet.jpeg",
+          price: 18999,
+          oldPrice: 22999,
+          discount: "18% OFF",
+          dealType: "Flash Sale",
+          details: "Limited time – grab yours now!",
+        },
+        {
+          name: "Samsung Galaxy",
+          img: "img/headphone3.jpeg",
+          price: 9840,
+          oldPrice: 12000,
+          discount: "18% OFF",
+          dealType: "Flash Sale",
+          details: "Limited time – grab yours now!",
+        },
+        {
+          name: "Samsung Airdops",
+          img: "img/headphone5.jpeg",
+          price: 2624,
+          oldPrice: 3200,
+          discount: "18% OFF",
+          dealType: "Flash Sale",
+          details: "Limited time – grab yours now!",
+        },
+      ];
 
-const grid = document.getElementById("dealsGrid");
+      const grid = document.getElementById("dealsGrid");
 
-deals.forEach(item => {
-  const card = document.createElement("div");
-  card.className = "deal-card";
-  card.innerHTML = `
+      deals.forEach((item) => {
+        const card = document.createElement("div");
+        card.className = "deal-card";
+        card.innerHTML = `
     <span class="discount">${item.discount}</span>
     <img src="${item.img}" alt="${item.name}">
     <h3>${item.name}</h3>
@@ -120,19 +121,18 @@ deals.forEach(item => {
     <button class="buy-btn">Buy Now</button>
   `;
 
-  // Handle Buy Now click
-  card.querySelector(".buy-btn").addEventListener("click", () => {
-    //alert(`You selected: ${item.name}`); -->
-    window.location.href = "buy.html?product=" + encodeURIComponent(item.name);
-  });
+        // Handle Buy Now click
+        card.querySelector(".buy-btn").addEventListener("click", () => {
+          //alert(`You selected: ${item.name}`); -->
+          window.location.href =
+            "categories.html?product=" + encodeURIComponent(item.name);
+        });
 
-  grid.appendChild(card);
-});
-</script>
+        grid.appendChild(card);
+      });
+    </script>
 
-
-  <script src="script.js"></script>
-
-   
+    <script src="auth.js"></script>
+    <script src="script.js"></script>
   </body>
 </html>

@@ -1,147 +1,191 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="style.css">
-     <!-- <link rel="icon" href="sitelogo.png" type="image/png" id="site_logo"> -->
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="style.css" />
+    <link rel="icon" href="img/sitelogo.png" type="image/png" id="site_logo" />
     <title>ShopEasy</title>
-</head>
+  </head>
 
+  <body>
+    <!-- 🔹 Navigation Menu -->
+    <header>
+      <nav class="navbar">
+        <div class="logo">ShopEasy 🛍️</div>
+        <ul class="nav-links">
+          <li><a href="index.html" class="active">Home</a></li>
+          <li><a href="categories.html">Categories</a></li>
+          <li><a href="deals.html">Deals</a></li>
+          <li><a href="cart.html">Cart 🛒</a></li>
+          <li><a href="contact.html">Contact</a></li>
+          <li><a href="buy.html">Buy now</a></li>
+          <!-- <li><a href="login.html" class="active">Login</a></li> -->
+          <li id="authArea"></li>
+        </ul>
+      </nav>
+    </header>
 
-<body>
-  <!-- 🔹 Navigation Menu -->
-  <header>
-    <nav class="navbar">
-      <div class="logo">ShopEasy 🛍️</div>
-      <ul class="nav-links">
-        <li><a href="index.html">Home</a></li>
-        <li><a href="categories.html">Categories</a></li>
-        <li><a href="deals.html">Deals</a></li>
-        <li><a href="cart.html">Cart 🛒</a></li>
-        <li><a href="contact.html">Contact</a></li>
-           <li><a href="buy.html">Buy now</a></li>
-      </ul>
-    </nav>
-  </header>
-
-  <!-- 🔹 Hero Banner -->
-  <section class="hero">
-    <h1>Welcome to ShopEasy</h1>
-    <p>Your one-stop shop for electronics, gadgets, and more.</p>
-    <a href="#products" class="btn">Shop Now</a>
-  </section>
-  <!-- popup -->
-  <div id="offerPopup" class="popup">
-  <div class="popup-content">
-    <span class="close-btn" id="closePopup">&times;</span>
-    <h2>🎉 Special Offer!</h2>
-    <p>Get <strong>20% OFF</strong> on all gadgets this week only.</p>
-    <button id="shopNow">Shop Now</button>
-  </div>
-</div>
-
-
-
-  <!-- Products Section -->
-  
-  <section class="product-container">
-    <h2>Gadgets</h2>
-    <div class="product-grid">
-
-      <div class="product-card">
-        <img src="img/smartwatch.jpeg" alt="Smartwatch"id="img" onclick="goToCategory()">
-        <h3>Smartwatch</h3>
-        <p>₹2500</p>
-        <button onclick="addToCart1('Smartwatch', 2500)">Add to Cart</button>
+    <!-- 🔹 Hero Banner -->
+    <section class="hero">
+      <h1>Welcome to ShopEasy</h1>
+      <p>Your one-stop shop for electronics, gadgets, and more.</p>
+      <a href="categories.html" class="btn">Shop Now</a>
+    </section>
+    <!-- popup -->
+    <div id="offerPopup" class="popup">
+      <div class="popup-content">
+        <span class="close-btn" id="closePopup">&times;</span>
+        <h2>🎉 Special Offer!</h2>
+        <p>Get <strong>20% OFF</strong> on all gadgets this week only.</p>
+        <button id="shopNow">Shop Now</button>
       </div>
-
-      <div class="product-card">
-        <img src="img/earbud1.jpeg" alt="Earbuds"id="img"onclick="goToCategory()">
-        <h3>Wireless Earbuds</h3>
-        <p>₹1500</p>
-        <button onclick="addToCart1('Wireless Earbuds', 1500)">Add to Cart</button>
-      </div>
-         <div class="product-card">
-        <img src="img/smartwatch1.jpeg" alt="Earbuds"id="img"onclick="goToCategory()">
-        <h3>Smartwatch</h3>
-        <p>₹1500</p>
-        <button onclick="addToCart1('Wireless Earbuds', 1500)">Add to Cart</button>
-      </div>   <div class="product-card">
-        <img src="img/earbud5.jpeg" alt="Earbuds"id="img"onclick="goToCategory()">
-        <h3>Wireless Earbuds</h3>
-        <p>₹1500</p>
-        <button onclick="addToCart1('Wireless Earbuds', 1500)">Add to Cart</button>
-      </div>
-
     </div>
 
-    <h2>Electronics</h2>
-    <div class="product-grid">
+    <!-- Products Section -->
 
-      <div class="product-card">
-        <img src="img/smartphone2.jpeg" alt="Phone"id="img"onclick="goToCategory()">
-        <h3>Smartphone</h3>
-        <p>₹12000</p>
-        <button onclick="addToCart1('Smartphone', 12000)">Add to Cart</button>
-      </div>
-
-      <div class="product-card">
-        <img src="img/laptop3.jpeg" alt="Laptop"id="img"onclick="goToCategory()">
-        <h3>Laptop</h3>
-        <p>₹45000</p>
-        <button onclick="addToCart1('Laptop', 45000)">Add to Cart</button>
-      </div>
+    <section class="product-container">
+      <h2>Gadgets</h2>
+      <div class="product-grid">
         <div class="product-card">
-        <img src="img/tv4.jpeg" alt="TV"id="img"onclick="goToCategory()">
-        <h3>TV</h3>
-        <p>₹75000</p>
-        <button onclick="addToCart1('Laptop', 45000)">Add to Cart</button>
+          <img
+            src="img/smartwatch.jpeg"
+            alt="Smartwatch"
+            id="img"
+            onclick="goToCategory()"
+          />
+          <h3>Smartwatch</h3>
+          <p>₹2500</p>
+          <button onclick="addToCart1('Smartwatch', 2500)">Add to Cart</button>
+        </div>
+
+        <div class="product-card">
+          <img
+            src="img/earbud1.jpeg"
+            alt="Earbuds"
+            id="img"
+            onclick="goToCategory()"
+          />
+          <h3>Wireless Earbuds</h3>
+          <p>₹1500</p>
+          <button onclick="addToCart1('Wireless Earbuds', 1500)">
+            Add to Cart
+          </button>
+        </div>
+        <div class="product-card">
+          <img
+            src="img/smartwatch1.jpeg"
+            alt="Earbuds"
+            id="img"
+            onclick="goToCategory()"
+          />
+          <h3>Smartwatch</h3>
+          <p>₹1500</p>
+          <button onclick="addToCart1('Wireless Earbuds', 1500)">
+            Add to Cart
+          </button>
+        </div>
+        <div class="product-card">
+          <img
+            src="img/earbud5.jpeg"
+            alt="Earbuds"
+            id="img"
+            onclick="goToCategory()"
+          />
+          <h3>Wireless Earbuds</h3>
+          <p>₹1500</p>
+          <button onclick="addToCart1('Wireless Earbuds', 1500)">
+            Add to Cart
+          </button>
+        </div>
       </div>
 
-      <div class="product-card">
-        <img src="img/tablet.jpeg" alt="Tablet"id="img"onclick="goToCategory()">
-        <h3>Tablet</h3>
-        <p>₹10000</p>
-        <button onclick="addToCart1('Tablet', 10000)">Add to Cart</button>
+      <h2>Electronics</h2>
+      <div class="product-grid">
+        <div class="product-card">
+          <img
+            src="img/smartphone2.jpeg"
+            alt="Phone"
+            id="img"
+            onclick="goToCategory()"
+          />
+          <h3>Smartphone</h3>
+          <p>₹12000</p>
+          <button onclick="addToCart1('Smartphone', 12000)">Add to Cart</button>
+        </div>
+
+        <div class="product-card">
+          <img
+            src="img/laptop3.jpeg"
+            alt="Laptop"
+            id="img"
+            onclick="goToCategory()"
+          />
+          <h3>Laptop</h3>
+          <p>₹45000</p>
+          <button onclick="addToCart1('Laptop', 45000)">Add to Cart</button>
+        </div>
+        <div class="product-card">
+          <img src="img/tv4.jpeg" alt="TV" id="img" onclick="goToCategory()" />
+          <h3>TV</h3>
+          <p>₹75000</p>
+          <button onclick="addToCart1('Laptop', 45000)">Add to Cart</button>
+        </div>
+
+        <div class="product-card">
+          <img
+            src="img/tablet.jpeg"
+            alt="Tablet"
+            id="img"
+            onclick="goToCategory()"
+          />
+          <h3>Tablet</h3>
+          <p>₹10000</p>
+          <button onclick="addToCart1('Tablet', 10000)">Add to Cart</button>
+        </div>
       </div>
+    </section>
+    <section id="products">
+      <h2>Our Products</h2>
+      <div id="product-list" class="product-grid"></div>
+    </section>
 
-    </div>
-  </section>
-  <section id="products">
-    <h2>Our Products</h2>
-    <div id="product-list" class="product-grid"></div>
-  </section>
- 
+    <footer>
+      <p>© 2025 ShopEasy. All rights reserved.</p>
+    </footer>
+    <script>
+      window.addEventListener("load", () => {
+        const popup = document.getElementById("offerPopup");
+        const closeBtn = document.getElementById("closePopup");
+        const shopBtn = document.getElementById("shopNow");
 
+        // Show popup after short delay (e.g., 1s)
+        setTimeout(() => (popup.style.display = "flex"), 1000);
 
-  <footer>
-    <p>© 2025 ShopEasy. All rights reserved.</p>
-  </footer>
-  <script>
-  window.addEventListener("load", () => {
-    const popup = document.getElementById("offerPopup");
-    const closeBtn = document.getElementById("closePopup");
-    const shopBtn = document.getElementById("shopNow");
+        // Close actions
+        closeBtn.addEventListener(
+          "click",
+          () => (popup.style.display = "none")
+        );
+        shopBtn.addEventListener("click", () => {
+          popup.style.display = "none";
+          window.location.href = "categories.html"; // or offers page
+        });
 
-    // Show popup after short delay (e.g., 1s)
-    setTimeout(() => popup.style.display = "flex", 1000);
+        // Optional: close if user clicks outside content
+        popup.addEventListener("click", (e) => {
+          if (e.target === popup) popup.style.display = "none";
+        });
+      });
+      const userStr = localStorage.getItem("user");
+      if (userStr) {
+        const user = JSON.parse(userStr);
+        console.log("Logged in as:", user.name);
+      }
+    </script>
 
-    // Close actions
-    closeBtn.addEventListener("click", () => popup.style.display = "none");
-    shopBtn.addEventListener("click", () => {
-      popup.style.display = "none";
-      window.location.href = "categories.html"; // or offers page
-    });
+    <script src="auth.js"></script>
 
-    // Optional: close if user clicks outside content
-    popup.addEventListener("click", e => {
-      if (e.target === popup) popup.style.display = "none";
-    });
-  });
-</script>
-
-
-  <script src="script.js"></script>
-</body>
+    <script src="script.js"></script>
+  </body>
 </html>

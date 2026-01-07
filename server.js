@@ -1,21 +1,21 @@
-
 const express = require("express");
 const mysql = require("mysql2");
 const cors = require("cors");
 const bodyParser = require("body-parser");
+const bcrypt = require("bcryptjs");
 
 const app = express();
 const PORT = 5000;
 
 // --- Middleware ---
 app.use(cors());
-app.use(bodyParser.json()); 
+app.use(bodyParser.json());
 
 // --- MySQL Connection ---
 const db = mysql.createConnection({
   host: "localhost",
   user: "root",
-  password: "user",
+  password: "user", // your MySQL password
   database: "ecommerce",
 });
 
@@ -27,22 +27,101 @@ db.connect((err) => {
   console.log("✅ Connected to MySQL Database");
 });
 
-// --- API Routes ---
+// ======================= AUTH ROUTES =========================
 
-// Get all products
+// Signup
+app.post("/api/signup", (req, res) => {
+  const { name, email, password } = req.body;
+
+  if (!name || !email || !password) {
+    return res.status(400).json({ message: "All fields are required" });
+  }
+
+  const checkSql = "SELECT id FROM users WHERE email = ?";
+  db.query(checkSql, [email], (err, rows) => {
+    if (err) {
+      console.error("❌ Error checking user:", err);
+      return res.status(500).json({ message: "Database error" });
+    }
+
+    if (rows.length > 0) {
+      return res.status(400).json({ message: "Email already registered" });
+    }
+
+    bcrypt.hash(password, 10, (err, hash) => {
+      if (err) {
+        console.error("❌ Error hashing password:", err);
+        return res.status(500).json({ message: "Server error" });
+      }
+
+      const insertSql =
+        "INSERT INTO users (name, email, password) VALUES (?, ?, ?)";
+      db.query(insertSql, [name, email, hash], (err, result) => {
+        if (err) {
+          console.error("❌ Error inserting user:", err);
+          return res.status(500).json({ message: "Database error" });
+        }
+
+        return res.status(201).json({ message: "Signup successful" });
+      });
+    });
+  });
+});
+
+// Login
+app.post("/api/login", (req, res) => {
+  const { email, password } = req.body;
+
+  if (!email || !password) {
+    return res.status(400).json({ message: "Email and password are required" });
+  }
+
+  const sql = "SELECT * FROM users WHERE email = ?";
+  db.query(sql, [email], (err, rows) => {
+    if (err) {
+      console.error("❌ Error finding user:", err);
+      return res.status(500).json({ message: "Database error" });
+    }
+
+    if (rows.length === 0) {
+      return res.status(400).json({ message: "Invalid email or password" });
+    }
+
+    const user = rows[0];
+
+    bcrypt.compare(password, user.password, (err, match) => {
+      if (err) {
+        console.error("❌ Error comparing password:", err);
+        return res.status(500).json({ message: "Server error" });
+      }
+
+      if (!match) {
+        return res.status(400).json({ message: "Invalid email or password" });
+      }
+
+      return res.json({
+        message: "Login successful",
+        user: {
+          id: user.id,
+          name: user.name,
+          email: user.email,
+        },
+      });
+    });
+  });
+});
+
+// Existing routes
 app.get("/api/products", (req, res) => {
   db.query("SELECT * FROM products", (err, results) => {
-    if (err) return res.status(500).json({ error: err });
+    if (err) {
+      console.error("❌ Error getting products:", err);
+      return res.status(500).json({ error: err });
+    }
     res.json(results);
   });
 });
 
-// ✅ Start server
-app.listen(5000, () => {
-  console.log("Server running at http://localhost:5000");
-});
-
-// --- ✅ Contact form route (store data) ---
 app.post("/api/contacts", (req, res) => {
   console.log("📩 Contact request received:", req.body);
 
@@ -69,10 +148,9 @@ app.post("/api/checkout", (req, res) => {
     return res.status(400).json({ message: "Cart is empty" });
   }
 
-  // Insert all cart items into database
   const values = cart.map((item) => [item.id, item.name, item.price]);
-
   const sql = "INSERT INTO cart (id, name, price) VALUES ?";
+
   db.query(sql, [values], (err, result) => {
     if (err) {
       console.error("❌ Error inserting cart:", err);
@@ -85,13 +163,6 @@ app.post("/api/checkout", (req, res) => {
   });
 });
 
-// --- Start Server ---
-app.listen(PORT, () => {
-  console.log(`🚀 Server running on http://localhost:${PORT}`);
-});
-
-// buy now
-
 app.delete("/api/cart", (req, res) => {
   const sql = "DELETE FROM cart";
   db.query(sql, (err, result) => {
@@ -103,9 +174,7 @@ app.delete("/api/cart", (req, res) => {
   });
 });
 
-
-
-
-
-
-
+// Start server
+app.listen(PORT, () => {
+  console.log(`🚀 Server running on http://localhost:${PORT}`);
+});
