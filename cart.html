@@ -3,62 +3,130 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-     <link rel="stylesheet" href="style.css">
-    <link rel="icon" href="img/sitelogo.png" type="image/png" id="site_logo">
-<title>ShopEasy</title>
+    <title>Cart - ShopEasy</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="img/sitelogo.png" type="image/png">
 </head>
+
 <body>
-    
-</body>
-</html>
-<body>
-  <!-- Navbar -->
- <header>
+
+<!-- Navbar -->
+<header>
     <nav class="navbar">
-      <div class="logo">ShopEasy 🛍️</div>
-      <ul class="nav-links">
-        <li><a href="index.html">Home</a></li>
-        <li><a href="categories.html">Categories</a></li>
-        <li><a href="deals.html">Deals</a></li>
-        <li><a href="cart.html"class="active">Cart 🛒</a></li>
-        <li><a href="contact.html">Contact</a></li>
-         <li><a href="buy.html">Buy now</a></li>
+        <div class="logo">ShopEasy 🛍️</div>
+        <ul class="nav-links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="categories.html">Categories</a></li>
+            <li><a href="deals.html">Deals</a></li>
+            <li><a href="cart.html" class="active">Cart 🛒</a></li>
+            <li><a href="contact.html">Contact</a></li>
+            <li><a href="buy.html">Buy Now</a></li>
             <li id="authArea"></li>
-      </ul>
+        </ul>
     </nav>
-  </header>
-  <!-- Cart Section -->
-  <section class="cart-container">
+</header>
+
+<!-- Cart Section -->
+<section class="cart-container">
     <h1>Your Shopping Cart</h1>
+
     <div id="cart-items"></div>
+
     <div class="cart-summary">
-      <h2>Total: ₹<span id="cart-total">0</span></h2>
-      <button id="checkout">Checkout</button>
-     
-
+        <h2>Total: ₹<span id="cart-total">0</span></h2>
+        <button id="checkout">Checkout</button>
     </div>
-  </section>
+</section>
 
-  <footer>
+<footer>
     <p>© 2025 ShopEasy. All rights reserved.</p>
-  </footer>
-  <script>
-document.getElementById("checkout").addEventListener("click", function() {
+</footer>
 
-  const user = localStorage.getItem("user");
+<!-- Scripts -->
+<script>
+function getCart() {
+    return JSON.parse(localStorage.getItem("cart")) || [];
+}
 
-  if (!user) {
-    // ❌ NOT LOGGED IN → go to login with redirect
-    window.location.href = "login.html?redirect=buy.html";
-  } else {
-    // ✅ LOGGED IN → go to payment page
-    window.location.href = "buy.html";
-  }
+function saveCart(cart) {
+    localStorage.setItem("cart", JSON.stringify(cart));
+}
 
+function renderCart() {
+    const cart = getCart();
+    const container = document.getElementById("cart-items");
+    const totalSpan = document.getElementById("cart-total");
+
+    container.innerHTML = "";
+    let total = 0;
+
+    if (cart.length === 0) {
+        container.innerHTML = "<p>Your cart is empty 😢</p>";
+        totalSpan.innerText = 0;
+        return;
+    }
+
+    cart.forEach((item, index) => {
+        const price = Number(item.price);
+        const quantity = Number(item.quantity);
+
+        if (isNaN(price) || isNaN(quantity)) {
+            console.error("Invalid item:", item);
+            return;
+        }
+
+        const div = document.createElement("div");
+        div.classList.add("cart-item");
+
+        div.innerHTML = `
+            <p><strong>${item.name}</strong></p>
+            <p>Price: ₹${price}</p>
+            <p>Qty: ${quantity}</p>
+            <p>Total: ₹${price * quantity}</p>
+            <button onclick="removeItem(${index})">Remove</button>
+            <hr>
+        `;
+
+        container.appendChild(div);
+        total += price * quantity;
+    });
+
+    totalSpan.innerText = total;
+}
+
+function removeItem(index) {
+    let cart = getCart();
+    cart.splice(index, 1);
+    saveCart(cart);
+    renderCart();
+}
+
+/* =========================
+   CHECKOUT BUTTON
+========================= */
+document.getElementById("checkout").addEventListener("click", function () {
+
+    const cart = getCart();
+
+    if (cart.length === 0) {
+        alert("Your cart is empty!");
+        return;
+    }
+
+    const user = localStorage.getItem("user");
+
+    if (!user) {
+        window.location.href = "login.html?redirect=buy.html";
+    } else {
+        window.location.href = "buy.html";
+    }
 });
+
+renderCart();
 </script>
 
 <script src="auth.js"></script>
-  <script src="script.js"></script>
+<script src="script.js"></script>
+
 </body>
 </html>

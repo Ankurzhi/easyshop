@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -26,77 +27,93 @@
         </nav>
       </header>
 
-      <main class="auth-main">
-        <div class="auth-box">
-          <h2>Login</h2>
-          <form id="loginForm">
-            <label for="email">Email</label>
-            <input type="email" id="email" name="email" required />
+```
+  <main class="auth-main">
+    <div class="auth-box">
+      <h2>Login</h2>
+      <form id="loginForm">
+        <label for="email">Email</label>
+        <input type="email" id="email" name="email" required />
 
-            <label for="password">Password</label>
-            <input type="password" id="password" name="password" required />
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password" required />
 
-            <button type="submit">Login</button>
-          </form>
-          <div class="auth-msg" id="loginMsg"></div>
+        <button type="submit">Login</button>
+      </form>
 
-          <p>
-            New user?
-            <a href="signup.html">Create account</a>
-          </p>
-        </div>
-      </main>
+      <div class="auth-msg" id="loginMsg"></div>
 
-      <footer>
-        <p>© 2025 ShopEasy. All rights reserved.</p>
-      </footer>
+      <p>
+        New user?
+        <a href="signup.html">Create account</a>
+      </p>
     </div>
+  </main>
 
-    <script>
-      const loginForm = document.getElementById("loginForm");
-      const loginMsg = document.getElementById("loginMsg");
+  <footer>
+    <p>© 2025 ShopEasy. All rights reserved.</p>
+  </footer>
+</div>
 
-      loginForm.addEventListener("submit", async (e) => {
-        e.preventDefault();
+<script>
+  const loginForm = document.getElementById("loginForm");
+  const loginMsg = document.getElementById("loginMsg");
 
-        const data = {
-          email: loginForm.email.value,
-          password: loginForm.password.value,
-        };
+  loginForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
 
-        try {
-          const res = await fetch("http://localhost:5000/api/login", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(data),
-          });
+    const data = {
+      email: loginForm.email.value,
+      password: loginForm.password.value,
+    };
 
-          const json = await res.json();
-          loginMsg.textContent = json.message || "Something went wrong";
-
-          if (res.ok) {
-            loginMsg.style.color = "green";
-
-            // ✅ Save user identification in localStorage
-            if (json.user) {
-              localStorage.setItem("user", JSON.stringify(json.user));
-            }
-
-            // 🔁 Check redirect parameter (e.g. login.html?redirect=payment.html)
-            const params = new URLSearchParams(window.location.search);
-            const redirectPage = params.get("redirect") || "index.html";
-
-            // Redirect to that page
-            window.location.href = redirectPage;
-          } else {
-            loginMsg.style.color = "red";
-          }
-        } catch (err) {
-          loginMsg.textContent = "Error: " + err.message;
-          loginMsg.style.color = "red";
-        }
+    try {
+      const res = await fetch("http://localhost:5000/api/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
       });
-    </script>
-    <script src="auth.js"></script>
+
+      const json = await res.json();
+
+      // 🔥 EMAIL NOT VERIFIED CHECK
+      if (json.message === "Please verify your email first") {
+        loginMsg.textContent = "Check your email and verify first!";
+        loginMsg.style.color = "orange";
+        return; // stop execution
+      }
+
+      // Default message
+      loginMsg.textContent = json.message || "Something went wrong";
+
+      if (res.ok) {
+        loginMsg.style.color = "green";
+
+        // Save user
+        if (json.user) {
+          localStorage.setItem("user", JSON.stringify(json.user));
+        }
+
+        // Redirect logic
+        const params = new URLSearchParams(window.location.search);
+        const redirectPage = params.get("redirect") || "index.html";
+
+        window.location.href = redirectPage;
+      } else {
+        loginMsg.style.color = "red";
+      }
+    } catch (err) {
+      loginMsg.textContent = "Error: " + err.message;
+      loginMsg.style.color = "red";
+    }
+  });
+</script>
+
+<script src="auth.js"></script>
+```
+
+  </body>
+</html>
+
   </body>
 </html>

@@ -3,19 +3,22 @@ const mysql = require("mysql2");
 const cors = require("cors");
 const bodyParser = require("body-parser");
 const bcrypt = require("bcryptjs");
+const nodemailer = require("nodemailer");
+const crypto = require("crypto");
+const Razorpay = require("razorpay");
 
 const app = express();
 const PORT = 5000;
 
-// --- Middleware ---
+// ================= MIDDLEWARE =================
 app.use(cors());
 app.use(bodyParser.json());
 
-// --- MySQL Connection ---
+// ================= DATABASE =================
 const db = mysql.createConnection({
   host: "localhost",
   user: "root",
-  password: "user", // your MySQL password
+  password: "user",
   database: "ecommerce",
 });
 
@@ -26,155 +29,183 @@ db.connect((err) => {
   }
   console.log("✅ Connected to MySQL Database");
 });
+const transporter = nodemailer.createTransport({
+  service: "gmail",
+  auth: {
+  user: "YOUR_REAL_GMAIL@gmail.com",
+  pass: "YOUR_16_DIGIT_APP_PASSWORD"
 
-// ======================= AUTH ROUTES =========================
+  }
+});
+
+function sendVerificationEmail(email, token) {
+  const link = `http://localhost:5000/api/verify/${token}`;
+
+  transporter.sendMail({
+    from: "your_email@gmail.com",
+    to: email,
+    subject: "Verify Your Email",
+    html: `<h3>Click below to verify your email</h3>
+           <a href="${link}">Verify Email</a>`
+  });
+}
+// ================= RAZORPAY =================
+const razorpay = new Razorpay({
+  key_id: "rzp_test_SjOLtIibGvJDJ0",
+  key_secret: "WtfjxDwv69ae5QCdoqMiRCqx"
+});
+
+// ================= AUTH =================
 
 // Signup
 app.post("/api/signup", (req, res) => {
   const { name, email, password } = req.body;
 
-  if (!name || !email || !password) {
-    return res.status(400).json({ message: "All fields are required" });
-  }
-
   const checkSql = "SELECT id FROM users WHERE email = ?";
   db.query(checkSql, [email], (err, rows) => {
-    if (err) {
-      console.error("❌ Error checking user:", err);
-      return res.status(500).json({ message: "Database error" });
-    }
 
     if (rows.length > 0) {
-      return res.status(400).json({ message: "Email already registered" });
+      return res.status(400).json({ message: "Email already exists" });
     }
 
     bcrypt.hash(password, 10, (err, hash) => {
-      if (err) {
-        console.error("❌ Error hashing password:", err);
-        return res.status(500).json({ message: "Server error" });
-      }
 
-      const insertSql =
-        "INSERT INTO users (name, email, password) VALUES (?, ?, ?)";
-      db.query(insertSql, [name, email, hash], (err, result) => {
-        if (err) {
-          console.error("❌ Error inserting user:", err);
-          return res.status(500).json({ message: "Database error" });
-        }
+      const token = crypto.randomBytes(32).toString("hex");
 
-        return res.status(201).json({ message: "Signup successful" });
+      const sql = `
+        INSERT INTO users (name, email, password, verificationToken, isVerified) 
+        VALUES (?, ?, ?, ?, false)
+      `;
+
+      db.query(sql, [name, email, hash, token], () => {
+
+        sendVerificationEmail(email, token);
+
+        res.json({ message: "Signup successful. Please verify your email." });
       });
     });
   });
+});
+app.get("/api/verify/:token", (req, res) => {
+  const token = req.params.token;
+
+  db.query(
+    "SELECT * FROM users WHERE verificationToken = ?",
+    [token],
+    (err, rows) => {
+
+      if (rows.length === 0) {
+        return res.send("Invalid or expired token");
+      }
+
+      db.query(
+        "UPDATE users SET isVerified = true, verificationToken = NULL WHERE id = ?",
+        [rows[0].id],
+        () => {
+          res.send("Email verified successfully. You can now login.");
+        }
+      );
+    }
+  );
 });
 
 // Login
 app.post("/api/login", (req, res) => {
   const { email, password } = req.body;
 
-  if (!email || !password) {
-    return res.status(400).json({ message: "Email and password are required" });
-  }
-
-  const sql = "SELECT * FROM users WHERE email = ?";
-  db.query(sql, [email], (err, rows) => {
-    if (err) {
-      console.error("❌ Error finding user:", err);
-      return res.status(500).json({ message: "Database error" });
-    }
+  db.query("SELECT * FROM users WHERE email=?", [email], (err, rows) => {
 
     if (rows.length === 0) {
-      return res.status(400).json({ message: "Invalid email or password" });
+      return res.status(400).json({ message: "Invalid user" });
     }
 
     const user = rows[0];
 
+    // ✅ ADD THIS CHECK
+    if (!user.isVerified) {
+      return res.status(401).json({
+        message: "Please verify your email first"
+      });
+    }
+
     bcrypt.compare(password, user.password, (err, match) => {
-      if (err) {
-        console.error("❌ Error comparing password:", err);
-        return res.status(500).json({ message: "Server error" });
-      }
 
       if (!match) {
-        return res.status(400).json({ message: "Invalid email or password" });
+        return res.status(400).json({ message: "Wrong password" });
       }
 
-      return res.json({
-        message: "Login successful",
-        user: {
-          id: user.id,
-          name: user.name,
-          email: user.email,
-        },
+      res.json({
+        message: "Login success",
+        user: user
       });
     });
   });
 });
-
-// Existing routes
+// ================= PRODUCTS =================
 app.get("/api/products", (req, res) => {
   db.query("SELECT * FROM products", (err, results) => {
+
     if (err) {
-      console.error("❌ Error getting products:", err);
-      return res.status(500).json({ error: err });
+      console.log("DB ERROR:", err);
+      return res.status(500).json({ error: "Database error" });
     }
-    res.json(results);
+
+    res.json(results); // 👈 must send JSON
   });
 });
-
+// ================= CONTACT =================
 app.post("/api/contacts", (req, res) => {
-  console.log("📩 Contact request received:", req.body);
-
   const { name, email, message } = req.body;
 
-  if (!name || !email || !message) {
-    return res.status(400).json({ message: "All fields are required" });
-  }
-
-  const sql = "INSERT INTO contacts (name, email, message) VALUES (?, ?, ?)";
-  db.query(sql, [name, email, message], (err, result) => {
-    if (err) {
-      console.error("❌ Error inserting contact:", err);
-      return res.status(500).json({ message: "Database error" });
+  db.query(
+    "INSERT INTO contacts (name,email,message) VALUES (?,?,?)",
+    [name, email, message],
+    () => {
+      res.json({ message: "Message saved" });
     }
-    res.json({ message: "✅ Thank you! Your message has been saved." });
-  });
+  );
 });
 
+// ================= CART =================
 app.post("/api/checkout", (req, res) => {
   const cart = req.body.cart;
 
-  if (!cart || cart.length === 0) {
-    return res.status(400).json({ message: "Cart is empty" });
-  }
+  const values = cart.map(item => [item.id, item.name, item.price]);
 
-  const values = cart.map((item) => [item.id, item.name, item.price]);
-  const sql = "INSERT INTO cart (id, name, price) VALUES ?";
-
-  db.query(sql, [values], (err, result) => {
-    if (err) {
-      console.error("❌ Error inserting cart:", err);
-      return res.status(500).json({ message: "Failed to save cart" });
+  db.query(
+    "INSERT INTO cart (id,name,price) VALUES ?",
+    [values],
+    () => {
+      res.json({ message: "Cart saved" });
     }
-    res.json({
-      message: "✅ Cart saved successfully",
-      inserted: result.affectedRows,
-    });
-  });
+  );
 });
 
 app.delete("/api/cart", (req, res) => {
-  const sql = "DELETE FROM cart";
-  db.query(sql, (err, result) => {
-    if (err) {
-      console.error("❌ Error clearing cart:", err);
-      return res.status(500).json({ message: "Failed to clear cart" });
-    }
-    res.json({ message: "✅ Cart cleared successfully (Order Placed)" });
+  db.query("DELETE FROM cart", () => {
+    res.json({ message: "Cart cleared" });
   });
 });
 
-// Start server
+// ================= PAYMENT =================
+app.post("/create-order", async (req, res) => {
+  const { amount } = req.body;
+
+  try {
+    const order = await razorpay.orders.create({
+      amount: amount * 100,
+      currency: "INR"
+    });
+
+    res.json(order);
+
+  } catch (err) {
+    console.log("ERROR:", err);   // 👈 IMPORTANT
+    res.status(500).json({ error: "Payment failed" });
+  }
+});
+
+// ================= START SERVER =================
 app.listen(PORT, () => {
   console.log(`🚀 Server running on http://localhost:${PORT}`);
 });

@@ -6,6 +6,42 @@
     <title>ShopEasy</title>
     <link rel="stylesheet" href="style.css" />
     <link rel="icon" href="img/sitelogo.png" type="image/png" id="site_logo" />
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+      <style>
+        body {
+            font-family: Arial;
+            background: #f5f5f5;
+        }
+        .container {
+            width: 400px;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            margin-top: 50px;
+            border-radius: 10px;
+        }
+        h2 {
+            text-align: center;
+        }
+        .item {
+            display: flex;
+            justify-content: space-between;
+            margin: 10px 0;
+        }
+        .total {
+            font-weight: bold;
+            font-size: 18px;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            background: green;
+            color: white;
+            border: none;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+    </style>
   </head>
   <body>
     <header>
@@ -23,27 +59,117 @@
       </nav>
     </header>
 
-    <main>
-      <button id="buyNowBtn">🛒 Buy Now</button>
-      <p id="response"></p>
-    </main>
+    <body>
 
-    <script>
-      document.getElementById("buyNowBtn").addEventListener("click", () => {
-        fetch("http://localhost:5000/api/cart", {
-          method: "DELETE",
-        })
-          .then((res) => res.json())
-          .then((data) => {
-            alert(data.message); 
-            document.getElementById("response").innerText = data.message;
-          })
-          .catch((err) => {
-            console.error("Fetch error:", err);
-            alert("Something went wrong!");
-          });
-      });
-    </script>
+<div class="container">
+    <h2>Payment</h2>
+
+    <div id="cartItems"></div>
+
+    <div class="total">
+        Total: ₹<span id="totalAmount">0</span>
+    </div>
+
+    <button onclick="payNow()">Pay Now</button>
+</div>
+
+<script>
+let cart = JSON.parse(localStorage.getItem("cart")) || [];
+
+const cartContainer = document.getElementById("cartItems");
+let total = 0;
+
+cartContainer.innerHTML = "";
+
+if (cart.length === 0) {
+    cartContainer.innerHTML = "<p>Cart is empty</p>";
+}
+
+cart.forEach(item => {
+
+    const name = item.name || "Product";
+    const price = Number(item.price);
+    const quantity = Number(item.quantity);
+
+    // ❌ STOP BAD DATA
+    if (isNaN(price) || isNaN(quantity)) {
+        console.error("Invalid item:", item);
+        return;
+    }
+
+    let div = document.createElement("div");
+    div.classList.add("item");
+
+    div.innerHTML = `
+        <span>${name} (x${quantity})</span>
+        <span>₹${price * quantity}</span>
+    `;
+
+    cartContainer.appendChild(div);
+
+    total += price * quantity;
+});
+
+document.getElementById("totalAmount").innerText = total;
+
+
+async function payNow() {
+
+    if (total <= 0) {
+        alert("Cart is empty!");
+        return;
+    }
+
+    try {
+        const res = await fetch("http://localhost:5000/create-order", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ amount: total })
+        });
+
+        const data = await res.json();
+
+if (!res.ok) {
+    alert("Backend error: " + data.error);
+    return;
+}
+
+const order = data;
+        console.log("Order:", order); // DEBUG
+
+        if (!order.id) {
+            alert("Payment failed. Backend error.");
+            return;
+        }
+
+        const options = {
+            key: "rzp_test_SjOLtIibGvJDJ0",
+            amount: order.amount,
+            currency: "INR",
+            name: "ShopEasy",
+            description: "Order Payment",
+            order_id: order.id,
+
+            handler: function (response) {
+                alert("Payment Successful ✅");
+                localStorage.removeItem("cart");
+                window.location.href = "success.html";
+            }
+        };
+
+        const rzp = new Razorpay(options);
+        rzp.open();
+
+    } catch (err) {
+        console.error(err);
+        alert("Error connecting to payment server");
+    }
+}
+</script>
     <script src="auth.js"></script>
+</body>
+
   </body>
 </html>
